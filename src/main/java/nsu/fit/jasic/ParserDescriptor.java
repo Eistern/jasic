@@ -1,25 +1,28 @@
 package nsu.fit.jasic;
 
+import nsu.fit.jasic.handlers.JasicElementHandler;
+import nsu.fit.jasic.handlers.JasicExecutableHandler;
+import nsu.fit.jasic.handlers.JasicPrintHandler;
+import nsu.fit.jasic.handlers.JasicVariableLoadHandler;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.support.Characters;
 import org.parboiled.support.Chars;
 
+import java.lang.reflect.InvocationTargetException;
+
 @SuppressWarnings("InfiniteRecursion")
 @BuildParseTree
 public class ParserDescriptor extends BaseParser<Object> {
-    protected int test = 1;
 
     public Rule jasicRunnable() {
-        return OneOrMore(jasicCommand(), Optional(commandSeparator()));
+        return Sequence(addHandler(JasicExecutableHandler.class, false, null), OneOrMore(jasicCommand(), Optional(commandSeparator())), closeHandler());
     }
 
     public Rule jasicCommand() {
         return FirstOf(variableDeclaration(), printCommand(), labelCommand(), gotoCommand());
     }
-
-
 
     public Rule gotoCommand() {
         return Sequence("goto ", variableName().label("labelCreation"));
@@ -30,7 +33,7 @@ public class ParserDescriptor extends BaseParser<Object> {
     }
 
     public Rule printCommand() {
-        return Sequence("print ", variableName().label("variableAccess"));
+        return Sequence("print ", addHandler(JasicPrintHandler.class, false, null), variableName().label("variableAccess"), addHandler(JasicVariableLoadHandler.class, true, match()), closeHandler());
     }
 
     public Rule variableDeclaration() {
@@ -63,5 +66,28 @@ public class ParserDescriptor extends BaseParser<Object> {
 
     public Rule commandSeparator() {
         return Ch('\n');
+    }
+
+    protected boolean addHandler(Class<? extends JasicElementHandler> clazz, boolean isLeaf, String data) {
+        try {
+            JasicElementHandler jasicElementHandler = clazz.getDeclaredConstructor().newInstance();
+            if (data != null) {
+                jasicElementHandler.setStringData(data);
+            }
+            if (isLeaf) {
+                JasicHandlerEnvironment.addCommand(jasicElementHandler);
+            } else {
+                JasicHandlerEnvironment.addTreeRoot(jasicElementHandler);
+            }
+        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    protected boolean closeHandler() {
+        JasicHandlerEnvironment.treeRootUp();
+        return true;
     }
 }
