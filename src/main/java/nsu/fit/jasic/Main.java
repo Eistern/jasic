@@ -22,7 +22,7 @@ public class Main {
 
         ParserDescriptor parser = Parboiled.createParser(ParserDescriptor.class);
         ParseRunner<Object> parserRunner = new ReportingParseRunner<>(parser.jasicRunnable());
-        String input = "let a = 1\nprint a";
+        String input = "label test\nlet a = 1\nprint a\ngoto test";
         ParsingResult<Object> parsingResult = parserRunner.run(input);
         System.out.println(ParseTreeUtils.printNodeTree(parsingResult));
         List<Node<Object>> allDeclarations = new ArrayList<>();

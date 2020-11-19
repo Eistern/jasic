@@ -22,11 +22,11 @@ public class ParserDescriptor extends BaseParser<Object> {
     }
 
     public Rule gotoCommand() {
-        return Sequence("goto ", variableName().label("labelCreation"));
+        return Sequence("goto ", variableName().label("labelAccess"), addHandler(JasicGotoHandler.class, true, match()));
     }
 
     public Rule labelCommand() {
-        return Sequence("label ", variableName().label("labelCreation"));
+        return Sequence("label ", variableName().label("labelCreation"), addHandler(JasicLabelHandler.class, true, match()));
     }
 
     public Rule printCommand() {

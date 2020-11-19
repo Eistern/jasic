@@ -14,7 +14,7 @@ public abstract class AbstractVariableInitializer extends AbstractVariableHandle
     @Override
     public void handle(MethodVisitor visitor) {
         VariableDescriptor descriptor = VariableStorage.getDescriptor(this.variableName);
-        Integer label = VariableStorage.getLabel(this.variableName);
+        Integer label = VariableStorage.getLocalNumber(this.variableName);
         if (descriptor == VariableDescriptor.STRING) {
             throw new IllegalArgumentException();
         }
