@@ -4,6 +4,7 @@ import nsu.fit.jasic.handlers.JasicElementHandler;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.parboiled.Node;
 import org.parboiled.Parboiled;
 import org.parboiled.parserunners.ParseRunner;
 import org.parboiled.parserunners.ReportingParseRunner;
@@ -12,16 +13,20 @@ import org.parboiled.support.ParsingResult;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
 //        InputStream input = new FileInputStream(new File(args[0]));
 
         ParserDescriptor parser = Parboiled.createParser(ParserDescriptor.class);
-        ParseRunner<Object> parserRunner = new ReportingParseRunner<Object>(parser.jasicRunnable());
-        String input = "print a";
+        ParseRunner<Object> parserRunner = new ReportingParseRunner<>(parser.jasicRunnable());
+        String input = "let a = 1\nprint a";
         ParsingResult<Object> parsingResult = parserRunner.run(input);
         System.out.println(ParseTreeUtils.printNodeTree(parsingResult));
+        List<Node<Object>> allDeclarations = new ArrayList<>();
+        ParseTreeUtils.collectNodes(parsingResult.parseTreeRoot, (Node<Object> node) -> node.getLabel().equals("variableCreate"), allDeclarations);
         JasicElementHandler resultHandler = JasicHandlerEnvironment.getResult();
 
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS);
@@ -44,6 +49,7 @@ public class Main {
         resultHandler.handle(methodVisitor);
         methodVisitor.visitInsn(Opcodes.RETURN);
 
+        methodVisitor.visitMaxs(allDeclarations.size(), allDeclarations.size());
         methodVisitor.visitEnd();
         classWriter.visitEnd();
 

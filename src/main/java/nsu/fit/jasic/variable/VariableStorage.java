@@ -8,8 +8,11 @@ public class VariableStorage {
     private static final Map<String, VariableDescriptor> descriptorMap = new HashMap<>();
     private static int labelCounter = 1;
 
-    public static void saveVariable(String variableName, VariableDescriptor variableType) {
+    public static void saveVariable(String variableName) {
         labelMap.put(variableName, labelCounter++);
+    }
+
+    public static void updateVariable(String variableName, VariableDescriptor variableType) {
         descriptorMap.put(variableName, variableType);
     }
 

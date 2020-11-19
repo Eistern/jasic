@@ -1,9 +1,6 @@
 package nsu.fit.jasic;
 
-import nsu.fit.jasic.handlers.JasicElementHandler;
-import nsu.fit.jasic.handlers.JasicExecutableHandler;
-import nsu.fit.jasic.handlers.JasicPrintHandler;
-import nsu.fit.jasic.handlers.JasicVariableLoadHandler;
+import nsu.fit.jasic.handlers.*;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
@@ -37,11 +34,11 @@ public class ParserDescriptor extends BaseParser<Object> {
     }
 
     public Rule variableDeclaration() {
-        return Sequence("let ", variableName().label("variableCreate"), Optional(variableInitialization()));
+        return Sequence("let ", variableName().label("variableCreate"), addHandler(JasicInitializerHandler.class, false, null), addHandler(JasicVariableDefinitionHandler.class, true, match()), Optional(variableInitialization()), closeHandler());
     }
 
     public Rule variableInitialization() {
-        return Sequence(optionalSpacesForChar('='), FirstOf(numberConst(), stringExpression(), variableName().label("variableAccess")));
+        return Sequence(optionalSpacesForChar('='), FirstOf(Sequence(numberConst(), addHandler(JasicVariableNumberInitializer.class, true, match())), stringExpression(), variableName().label("variableAccess")));
     }
 
     public Rule variableName() {
