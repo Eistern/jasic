@@ -21,7 +21,7 @@ public class JasicIfBlockHandler extends AbstractTreeRootHandler {
         leftSide.handle(visitor);
         rightSide.handle(visitor);
         if (invert) {
-            visitor.visitJumpInsn(Opcodes.IF_ICMPLE, skipBlock);
+            visitor.visitJumpInsn(Opcodes.IF_ICMPLT, skipBlock);
         } else {
             visitor.visitJumpInsn(Opcodes.IF_ICMPGE, skipBlock);
         }
