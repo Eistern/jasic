@@ -1,5 +1,8 @@
 let b = "1"
+let a = 2
 label test
 let b = b + b
 print b
+if not a < 1 {
 goto test
+}

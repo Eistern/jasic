@@ -48,7 +48,8 @@ public class ParserDescriptor extends BaseParser<Object> {
 
     public Rule ifBlock() {
         return Sequence("if ",
-                addHandler(JasicIfBlockHandler.class, false, null),
+                Optional("not "),
+                addHandler(JasicIfBlockHandler.class, false, match()),
                 logicExpression(),
                 optionalSpacesForChar('{'), commandSeparator(),
                 jasicRunnable(),

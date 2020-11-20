@@ -5,6 +5,13 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 public class JasicIfBlockHandler extends AbstractTreeRootHandler {
+    private boolean invert = false;
+
+    @Override
+    public void setStringData(String data) {
+        invert = data.equals("not ");
+    }
+
     @Override
     public void handle(MethodVisitor visitor) {
         JasicElementHandler leftSide = this.children.get(0);
@@ -13,7 +20,11 @@ public class JasicIfBlockHandler extends AbstractTreeRootHandler {
         Label skipBlock = new Label();
         leftSide.handle(visitor);
         rightSide.handle(visitor);
-        visitor.visitJumpInsn(Opcodes.IF_ICMPGE, skipBlock);
+        if (invert) {
+            visitor.visitJumpInsn(Opcodes.IF_ICMPLE, skipBlock);
+        } else {
+            visitor.visitJumpInsn(Opcodes.IF_ICMPGE, skipBlock);
+        }
         codeBlock.handle(visitor);
         visitor.visitLabel(skipBlock);
     }
