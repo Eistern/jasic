@@ -41,7 +41,8 @@ public class JasicStringExpressionHandler extends AbstractVariableInitializer {
             visitor.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
             for (JasicElementHandler child : children) {
                 child.handle(visitor);
-                visitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
+                String descr = ((AbstractVariableInitializer) child).getVariableSignature();
+                visitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "append", String.format("(%s)Ljava/lang/StringBuilder;", descr), false);
             }
             visitor.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
         }
