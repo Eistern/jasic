@@ -116,7 +116,7 @@ public class ParserDescriptor extends BaseParser<Object> {
     }
 
     public Rule numberConst() {
-        return Sequence(CharRange('1', '9'), ZeroOrMore(CharRange('0', '9')));
+        return OneOrMore(CharRange('0', '9'));
     }
 
     public Rule commandSeparator() {

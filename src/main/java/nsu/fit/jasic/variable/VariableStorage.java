@@ -24,7 +24,13 @@ public class VariableStorage {
     }
 
     public static Label getLabel(String name) {
-        return labelMap.get(name);
+        if (labelMap.containsKey(name)) {
+            return labelMap.get(name);
+        } else {
+            Label label = new Label();
+            labelMap.put(name, label);
+            return label;
+        }
     }
 
     public static VariableDescriptor getDescriptor(String variableName) {

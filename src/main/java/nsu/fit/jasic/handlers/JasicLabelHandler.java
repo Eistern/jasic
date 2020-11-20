@@ -8,8 +8,7 @@ public class JasicLabelHandler extends AbstractVariableHandler {
 
     @Override
     public void handle(MethodVisitor visitor) {
-        Label label = new Label();
-        VariableStorage.saveLabel(this.variableName, label);
+        Label label = VariableStorage.getLabel(this.variableName);
         visitor.visitLabel(label);
     }
 }
