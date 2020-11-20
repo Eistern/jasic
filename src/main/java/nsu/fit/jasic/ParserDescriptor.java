@@ -109,7 +109,9 @@ public class ParserDescriptor extends BaseParser<Object> {
     }
 
     public Rule commandSeparator() {
-        return Ch('\n');
+        return FirstOf(
+                Ch('\n'),
+                String("\r\n"));
     }
 
     protected boolean addHandler(Class<? extends JasicElementHandler> clazz, boolean isLeaf, String data) {

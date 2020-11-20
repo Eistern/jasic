@@ -6,6 +6,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.parboiled.Node;
 import org.parboiled.Parboiled;
+import org.parboiled.common.FileUtils;
 import org.parboiled.parserunners.ParseRunner;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParseTreeUtils;
@@ -18,13 +19,16 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-//        InputStream input = new FileInputStream(new File(args[0]));
+        if (args.length != 1) {
+            System.err.println("Usage: <executable.jsc>");
+            return;
+        }
+        String input = FileUtils.readAllText(args[0]);
+        String outputFileName = args[0].split("\\.jcs$")[0];
 
         ParserDescriptor parser = Parboiled.createParser(ParserDescriptor.class);
         ParseRunner<Object> parserRunner = new ReportingParseRunner<>(parser.jasicRunnable());
-        String input = "label test\nlet b = \"cool\"\nlet a = \"b\"+b\nprint a\ngoto test";
-        String input2 = "let a = 2\nif a < 5 {\nprint a\nlet a = 1\n}\nprint a";
-        ParsingResult<Object> parsingResult = parserRunner.run(input2);
+        ParsingResult<Object> parsingResult = parserRunner.run(input);
         if (parsingResult.hasErrors()) {
             System.err.println("Parse Error " + parsingResult.parseErrors.get(0).getStartIndex());
             return;
@@ -35,7 +39,7 @@ public class Main {
         JasicElementHandler resultHandler = JasicHandlerEnvironment.getResult();
 
         ClassWriter classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES + ClassWriter.COMPUTE_MAXS);
-        classWriter.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, "Main", null, "java/lang/Object", null);
+        classWriter.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, outputFileName, null, "java/lang/Object", null);
 
         //Default <init>
         MethodVisitor initVisitor = classWriter.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
@@ -58,7 +62,7 @@ public class Main {
         methodVisitor.visitEnd();
         classWriter.visitEnd();
 
-        FileOutputStream outputStream = new FileOutputStream("Main.class");
+        FileOutputStream outputStream = new FileOutputStream(String.format("%s.class", outputFileName));
         outputStream.write(classWriter.toByteArray());
         outputStream.close();
     }
