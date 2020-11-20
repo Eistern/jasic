@@ -1,5 +1,6 @@
 package nsu.fit.jasic.handlers;
 
+import nsu.fit.jasic.variable.VariableDescriptor;
 import org.objectweb.asm.MethodVisitor;
 
 public class JasicInitializerHandler extends AbstractTreeRootHandler {
@@ -10,8 +11,9 @@ public class JasicInitializerHandler extends AbstractTreeRootHandler {
         variableDefinition.handle(visitor);
         if (this.children.size() == 2) {
             AbstractVariableInitializer variableInitializer = (AbstractVariableInitializer) this.children.get(1);
-            variableInitializer.setVariableName(variableDefinition.getStringData());
             variableInitializer.handle(visitor);
+            VariableDescriptor descriptor = variableInitializer.getDescriptor();
+            variableDefinition.saveVariableOnStack(visitor, descriptor);
         }
     }
 }

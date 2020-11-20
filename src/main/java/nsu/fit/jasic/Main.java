@@ -22,7 +22,7 @@ public class Main {
 
         ParserDescriptor parser = Parboiled.createParser(ParserDescriptor.class);
         ParseRunner<Object> parserRunner = new ReportingParseRunner<>(parser.jasicRunnable());
-        String input = "label test\nlet a = 1\nprint a\ngoto test";
+        String input = "label test\nlet b = \"cool\"\nlet a = \"b\"+b\nprint a\ngoto test";
         ParsingResult<Object> parsingResult = parserRunner.run(input);
         System.out.println(ParseTreeUtils.printNodeTree(parsingResult));
         List<Node<Object>> allDeclarations = new ArrayList<>();
@@ -44,12 +44,12 @@ public class Main {
         //main method
         MethodVisitor methodVisitor = classWriter
                 .visitMethod(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, "main", "([Ljava/lang/String;)V",
-                        null, null);
+                        null, new String[]{"java/lang/Throwable"});
         methodVisitor.visitCode();
         resultHandler.handle(methodVisitor);
         methodVisitor.visitInsn(Opcodes.RETURN);
 
-        methodVisitor.visitMaxs(allDeclarations.size(), allDeclarations.size());
+        methodVisitor.visitMaxs(0, 0);
         methodVisitor.visitEnd();
         classWriter.visitEnd();
 
