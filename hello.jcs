@@ -1,0 +1,15 @@
+let out = "Hello, World"
+let test = "One-Time"
+let i = 0
+label start
+if not i < 5 {
+if i < 6 {
+print test
+}
+goto end
+}
+print out
+increment i
+goto start
+label end
+print out
