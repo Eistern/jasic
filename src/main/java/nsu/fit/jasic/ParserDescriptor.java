@@ -101,7 +101,9 @@ public class ParserDescriptor extends BaseParser<Object> {
         return Sequence(
                 FirstOf(
                         Sequence(stringLiteral(), addHandler(JasicVariableStringInitializer.class, true, match())),
-                        Sequence(variableName(), addHandler(JasicVariableLoadHandler.class, true, match()))),
+                        Sequence(variableName(), addHandler(JasicVariableLoadHandler.class, true, match())),
+                        Sequence(numberConst(), addHandler(JasicVariableNumberInitializer.class, true, match()))),
+
                 Optional(optionalSpacesForChar('+'), stringExpression()));
     }
 

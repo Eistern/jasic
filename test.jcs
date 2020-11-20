@@ -1,7 +1,7 @@
 let b = "1"
 let a = 2
 label test
-let b = b + b + a
+let b = b + b + a + 1 + "cool"
 print b
 increment a
 if a < 5 {
