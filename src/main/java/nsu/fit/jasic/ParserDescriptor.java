@@ -26,7 +26,8 @@ public class ParserDescriptor extends BaseParser<Object> {
                 printCommand(),
                 labelCommand(),
                 gotoCommand(),
-                ifBlock());
+                ifBlock(),
+                incrementCommand());
     }
 
     public Rule gotoCommand() {
@@ -42,6 +43,13 @@ public class ParserDescriptor extends BaseParser<Object> {
     public Rule printCommand() {
         return Sequence("print ",
                 addHandler(JasicPrintHandler.class, false, null),
+                variableName().label("variableAccess"), addHandler(JasicVariableLoadHandler.class, true, match()),
+                closeHandler());
+    }
+
+    public Rule incrementCommand() {
+        return Sequence("increment ",
+                addHandler(JasicIncrementHandler.class, false, null),
                 variableName().label("variableAccess"), addHandler(JasicVariableLoadHandler.class, true, match()),
                 closeHandler());
     }

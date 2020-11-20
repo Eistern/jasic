@@ -3,6 +3,7 @@ let a = 2
 label test
 let b = b + b
 print b
-if not a < 1 {
+increment a
+if a < 5 {
 goto test
 }
