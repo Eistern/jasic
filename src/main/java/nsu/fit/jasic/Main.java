@@ -23,7 +23,12 @@ public class Main {
         ParserDescriptor parser = Parboiled.createParser(ParserDescriptor.class);
         ParseRunner<Object> parserRunner = new ReportingParseRunner<>(parser.jasicRunnable());
         String input = "label test\nlet b = \"cool\"\nlet a = \"b\"+b\nprint a\ngoto test";
-        ParsingResult<Object> parsingResult = parserRunner.run(input);
+        String input2 = "let a = 2\nif a < 5 {\nprint a\nlet a = 1\n}\nprint a";
+        ParsingResult<Object> parsingResult = parserRunner.run(input2);
+        if (parsingResult.hasErrors()) {
+            System.err.println("Parse Error " + parsingResult.parseErrors.get(0).getStartIndex());
+            return;
+        }
         System.out.println(ParseTreeUtils.printNodeTree(parsingResult));
         List<Node<Object>> allDeclarations = new ArrayList<>();
         ParseTreeUtils.collectNodes(parsingResult.parseTreeRoot, (Node<Object> node) -> node.getLabel().equals("variableCreate"), allDeclarations);

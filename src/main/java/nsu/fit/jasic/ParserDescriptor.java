@@ -25,7 +25,8 @@ public class ParserDescriptor extends BaseParser<Object> {
                 variableDeclaration(),
                 printCommand(),
                 labelCommand(),
-                gotoCommand());
+                gotoCommand(),
+                ifBlock());
     }
 
     public Rule gotoCommand() {
@@ -43,6 +44,29 @@ public class ParserDescriptor extends BaseParser<Object> {
                 addHandler(JasicPrintHandler.class, false, null),
                 variableName().label("variableAccess"), addHandler(JasicVariableLoadHandler.class, true, match()),
                 closeHandler());
+    }
+
+    public Rule ifBlock() {
+        return Sequence("if ",
+                addHandler(JasicIfBlockHandler.class, false, null),
+                logicExpression(),
+                optionalSpacesForChar('{'), commandSeparator(),
+                jasicRunnable(),
+                optionalSpacesForChar('}'),
+                closeHandler());
+    }
+
+    public Rule logicExpression() {
+        return Sequence(
+                FirstOf(
+                        Sequence(variableName(), addHandler(JasicVariableLoadHandler.class, true, match())),
+                        Sequence(numberConst(), addHandler(JasicVariableNumberInitializer.class, true, match()))
+                ), optionalSpacesForChar('<'),
+                FirstOf(
+                        Sequence(variableName(), addHandler(JasicVariableLoadHandler.class, true, match())),
+                        Sequence(numberConst(), addHandler(JasicVariableNumberInitializer.class, true, match()))
+                )
+        );
     }
 
     public Rule variableDeclaration() {

@@ -12,7 +12,7 @@ public class VariableStorage {
     private static int labelCounter = 1;
 
     public static void saveVariable(String variableName) {
-        localNumberMap.put(variableName, labelCounter++);
+        localNumberMap.putIfAbsent(variableName, labelCounter++);
     }
 
     public static void updateVariable(String variableName, VariableDescriptor variableType) {
